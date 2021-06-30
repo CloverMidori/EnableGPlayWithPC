@@ -35,11 +35,11 @@
             this.Label_GSFLogin = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.Button_Process = new System.Windows.Forms.Button();
+            this.LinkLabel_Repo = new System.Windows.Forms.LinkLabel();
             this.FileSelector_GSFLogin = new EnableGPlayWithPC.FileSelector();
             this.FileSelector_GSF = new EnableGPlayWithPC.FileSelector();
             this.FileSelector_GMS = new EnableGPlayWithPC.FileSelector();
             this.FileSelector_Vending = new EnableGPlayWithPC.FileSelector();
-            this.LinkLabel_Repo = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // Label_Vending
@@ -69,30 +69,12 @@
             // 
             // Button_Process
             // 
+            this.Button_Process.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.Button_Process.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
             resources.ApplyResources(this.Button_Process, "Button_Process");
             this.Button_Process.Name = "Button_Process";
-            this.Button_Process.UseVisualStyleBackColor = true;
+            this.Button_Process.UseVisualStyleBackColor = false;
             this.Button_Process.Click += new System.EventHandler(this.Button_Process_Click);
-            // 
-            // FileSelector_GSFLogin
-            // 
-            resources.ApplyResources(this.FileSelector_GSFLogin, "FileSelector_GSFLogin");
-            this.FileSelector_GSFLogin.Name = "FileSelector_GSFLogin";
-            // 
-            // FileSelector_GSF
-            // 
-            resources.ApplyResources(this.FileSelector_GSF, "FileSelector_GSF");
-            this.FileSelector_GSF.Name = "FileSelector_GSF";
-            // 
-            // FileSelector_GMS
-            // 
-            resources.ApplyResources(this.FileSelector_GMS, "FileSelector_GMS");
-            this.FileSelector_GMS.Name = "FileSelector_GMS";
-            // 
-            // FileSelector_Vending
-            // 
-            resources.ApplyResources(this.FileSelector_Vending, "FileSelector_Vending");
-            this.FileSelector_Vending.Name = "FileSelector_Vending";
             // 
             // LinkLabel_Repo
             // 
@@ -100,6 +82,31 @@
             this.LinkLabel_Repo.Name = "LinkLabel_Repo";
             this.LinkLabel_Repo.TabStop = true;
             this.LinkLabel_Repo.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_Repo_LinkClicked);
+            // 
+            // FileSelector_GSFLogin
+            // 
+            this.FileSelector_GSFLogin.AllowDrop = true;
+            resources.ApplyResources(this.FileSelector_GSFLogin, "FileSelector_GSFLogin");
+            this.FileSelector_GSFLogin.Name = "FileSelector_GSFLogin";
+            // 
+            // FileSelector_GSF
+            // 
+            this.FileSelector_GSF.AllowDrop = true;
+            resources.ApplyResources(this.FileSelector_GSF, "FileSelector_GSF");
+            this.FileSelector_GSF.Name = "FileSelector_GSF";
+            // 
+            // FileSelector_GMS
+            // 
+            this.FileSelector_GMS.AllowDrop = true;
+            resources.ApplyResources(this.FileSelector_GMS, "FileSelector_GMS");
+            this.FileSelector_GMS.Name = "FileSelector_GMS";
+            // 
+            // FileSelector_Vending
+            // 
+            this.FileSelector_Vending.AllowDrop = true;
+            this.FileSelector_Vending.Cursor = System.Windows.Forms.Cursors.Default;
+            resources.ApplyResources(this.FileSelector_Vending, "FileSelector_Vending");
+            this.FileSelector_Vending.Name = "FileSelector_Vending";
             // 
             // Main
             // 
