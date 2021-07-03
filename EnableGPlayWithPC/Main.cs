@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -25,8 +27,14 @@ namespace EnableGPlayWithPC
             FileSelector_GSFLogin.Init(Path.Combine(appDir, Apks.GSFLogin));
         }
 
-        private void Button_Process_Click(object sender, EventArgs e)
+        private async void Button_Process_Click(object sender, EventArgs e)
         {
+            var progressBarDialog = new Progress();
+            progressBarDialog.Title = "処理中";
+            progressBarDialog.Message = "初期化中";
+            progressBarDialog.Value = 0;
+            progressBarDialog.Show();
+
             foreach (var path in GetSelectedPath())
             {
                 if (!File.Exists(path))
@@ -35,16 +43,19 @@ namespace EnableGPlayWithPC
                         string.Format(Properties.Resources.Dialog_404_Desc, path), Handle);
                     return;
                 }
+                progressBarDialog.Value = progressBarDialog.Value + 1;
             }
 
-
             var appDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            progressBarDialog.Value = progressBarDialog.Value + 1;
 
             var adb = new AdbServer();
+            progressBarDialog.Value = progressBarDialog.Value + 1;
 
             try
             {
                 var result = adb.StartServer(Path.Combine(appDir, Properties.Resources.AdbPath), true);
+                progressBarDialog.Value = progressBarDialog.Value + 1;
             }
             catch (Exception)
             {
@@ -58,20 +69,24 @@ namespace EnableGPlayWithPC
             {
 #endif
                 var device = AdbClient.Instance.GetDevices().First();
-
+                progressBarDialog.Value = progressBarDialog.Value + 1;
+                
                 if (AdbClient.Instance.GetDevices().Count > 1)
                 {
                     Dialog.Error(Properties.Resources.Dialog_TooManyDevices_Inst,
                         Properties.Resources.Dialog_TooManyDevices_Desc, Handle);
                     return;
                 }
+                progressBarDialog.Value = progressBarDialog.Value + 1;
 
                 {
                     var receiver = new ConsoleOutputReceiver();
+                    progressBarDialog.Value = progressBarDialog.Value + 1;
 
                     AdbClient.Instance.ExecuteRemoteCommand($"getprop ro.build.product", device, receiver);
                     var product = receiver.ToString();
                     product = product.Substring(0, product.Length - 2); // 余計な改行は入れさせない
+                    progressBarDialog.Value = progressBarDialog.Value + 1;
 
                     Console.WriteLine(product.Length);
 
@@ -83,16 +98,20 @@ namespace EnableGPlayWithPC
 
                         if (result != TaskDialogResult.Ok) return;
                     }
+                    progressBarDialog.Value = progressBarDialog.Value + 1;
                 }
 
                 var packageManager = new PackageManager(device);
+                progressBarDialog.Value = progressBarDialog.Value + 1;
 
                 // それぞれアンインストール
                 foreach (var pkg in Packages.PackageNames)
                 {
                     try
                     {
+                        progressBarDialog.Message = pkg + "をアンインストール中";
                         packageManager.UninstallPackage(pkg);
+                        progressBarDialog.Value = progressBarDialog.Value + 10;
                     }
                     catch (Exception)
                     {
@@ -102,10 +121,20 @@ namespace EnableGPlayWithPC
 
                 // パスを取得
                 var apks = GetSelectedPath();
+                progressBarDialog.Value = progressBarDialog.Value + 10;
+
                 // それぞれインストール
-                Array.ForEach(apks, apk => packageManager.InstallPackage(apk, false));
+                var ip = 1;
+                progressBarDialog.Message = "インストール中 (" +ip+ "/4)";
+                await Task.Delay(1000);
+                Array.ForEach(apks, apk => {
+                    packageManager.InstallPackage(apk, false);
+                    ip++;
+                    progressBarDialog.Value = progressBarDialog.Value + 10;
+                });
 
                 // Play ストアに権限付与
+                progressBarDialog.Message = "Google Playに権限を付与中";
                 {
                     var result = AndroidDebugBridgeUtils.GrantPermissions(Packages.Vending,
                             Permissions.Vending,
@@ -116,8 +145,10 @@ namespace EnableGPlayWithPC
                         return;
                     }
                 }
+                progressBarDialog.Value = progressBarDialog.Value + 10;
 
                 // GooglePlay開発者サービスに権限付与
+                progressBarDialog.Message = "GMSに権限を付与中";
                 {
                     var result = AndroidDebugBridgeUtils.GrantPermissions(Packages.GMS,
                             Permissions.GMS,
@@ -128,8 +159,10 @@ namespace EnableGPlayWithPC
                         return;
                     }
                 }
+                progressBarDialog.Value = progressBarDialog.Value + 4;
 
                 // Google Service Frameworkに権限付与。
+                progressBarDialog.Message = "GFSに権限を付与中";
                 {
                     var result = AndroidDebugBridgeUtils.GrantPermissions(Packages.GSF,
                             Permissions.GSF,
@@ -140,9 +173,14 @@ namespace EnableGPlayWithPC
                         return;
                     }
                 }
+                progressBarDialog.Value = progressBarDialog.Value + 4;
 
-            // もういちどGMSをインストール。
-            packageManager.InstallPackage(FileSelector_GMS.GetPath(), true);
+                // もういちどGMSをインストール。
+                progressBarDialog.Message = "最終処理中";
+                packageManager.InstallPackage(FileSelector_GMS.GetPath(), true);
+                progressBarDialog.Value = 100;
+
+                progressBarDialog.Close();
 
 #if !DEBUG
             }
@@ -154,7 +192,7 @@ namespace EnableGPlayWithPC
             }
 #endif
 
-            var dialog = new TaskDialog();
+        var dialog = new TaskDialog();
                 dialog.Caption = "Enable GPlay With PC";
                 dialog.InstructionText = Properties.Resources.Dialog_Successed_Inst;
                 dialog.Text = Properties.Resources.Dialog_Successed_Desc;
