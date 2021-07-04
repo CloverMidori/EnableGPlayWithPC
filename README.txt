@@ -1,5 +1,5 @@
 # Enable GPlay With PC
 
-https://github.com/AioiLight/EnableGPlayWithPC
-
-�`�������W�p�b�h�ŁAGoogle Play�̋@�\�̈ꕔ���g����悤�ɂ���c�[���ł��B
+元ソース: https://github.com/AioiLight/EnableGPlayWithPC
+https://github.com/CloverMidori/EnableGPlayWithPC
+チャレンジパッドで、Google Playの機能の一部を使えるようにするツールです。
